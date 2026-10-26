@@ -1,0 +1,364 @@
+[
+  {
+    "id": "flow-Budget-approval",
+    "name": "Budget Approval Flow",
+    "description": "Auto-generated approval flow for Budget. Customize email templates and add conditions as needed.",
+    "resourceName": "Budget",
+    "enabled": true,
+    "variables": [
+      {
+        "name": "assigneeEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "creatorEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "departmentEmails",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "formLink",
+        "type": "string",
+        "defaultValue": ""
+      }
+    ],
+    "nodes": [
+      {
+        "id": "Budget-approval-trigger",
+        "type": "trigger",
+        "label": "On Budget Submit",
+        "position": {
+          "x": 300,
+          "y": 50
+        },
+        "trigger": {
+          "type": "on-field-change",
+          "resourceName": "Budget",
+          "fieldName": "status"
+        }
+      },
+      {
+        "id": "Budget-approval-condition",
+        "type": "condition",
+        "label": "Status = PendingApproval?",
+        "position": {
+          "x": 300,
+          "y": 160
+        },
+        "condition": {
+          "logic": "and",
+          "rules": [
+            {
+              "field": "triggerData.status",
+              "operator": "equals",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "Budget-approval-approval",
+        "type": "approval",
+        "label": "Budget Approval",
+        "position": {
+          "x": 300,
+          "y": 280
+        },
+        "approval": {
+          "steps": [
+            {
+              "name": "Finans Onayı",
+              "assigneeType": "role",
+              "assigneeValue": "FinanceApprover",
+              "actions": [
+                {
+                  "label": "Onayla",
+                  "type": "approve"
+                },
+                {
+                  "label": "Revize Et",
+                  "type": "revise",
+                  "requiredFields": [
+                    "revisionNote"
+                  ]
+                }
+              ]
+            }
+          ],
+          "trackRevisionHistory": true,
+          "onCompleteEvent": "Budget-approval-completed"
+        }
+      },
+      {
+        "id": "Budget-approval-email",
+        "type": "action",
+        "label": "Send Approval Email",
+        "position": {
+          "x": 300,
+          "y": 400
+        },
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{assigneeEmail}}",
+            "subject": "{{triggerData.title}} — Onayınızı bekliyor",
+            "body": "<p>Sayın onaylayıcı,</p><p><strong>{{triggerData.title}}</strong> bütçesi onayınızı beklemektedir.</p>",
+            "contentType": "html"
+          }
+        }
+      },
+      {
+        "id": "Budget-approval-completion-trigger",
+        "type": "trigger",
+        "label": "On Budget Approved",
+        "position": {
+          "x": 700,
+          "y": 50
+        },
+        "trigger": {
+          "type": "manual",
+          "resourceName": "Budget"
+        }
+      },
+      {
+        "id": "Budget-approval-completion-email",
+        "type": "action",
+        "label": "Send Completion Email",
+        "position": {
+          "x": 700,
+          "y": 160
+        },
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{creatorEmail}}",
+            "cc": "{{departmentEmails}}",
+            "subject": "{{triggerData.formNo}} — Tum onaylar tamamlandi",
+            "body": "<p>{{triggerData.formNo}} numarali formun onay sureci tamamlanmistir.</p>",
+            "contentType": "html"
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "gen_1793017343946_1",
+        "sourceNodeId": "Budget-approval-trigger",
+        "targetNodeId": "Budget-approval-condition"
+      },
+      {
+        "id": "gen_1793017343947_2",
+        "sourceNodeId": "Budget-approval-condition",
+        "targetNodeId": "Budget-approval-approval",
+        "branch": "true"
+      },
+      {
+        "id": "gen_1793017343947_3",
+        "sourceNodeId": "Budget-approval-approval",
+        "targetNodeId": "Budget-approval-email"
+      },
+      {
+        "id": "gen_1793017343947_4",
+        "sourceNodeId": "Budget-approval-completion-trigger",
+        "targetNodeId": "Budget-approval-completion-email"
+      }
+    ],
+    "createdAt": "2026-10-26T12:22:23.946Z",
+    "updatedAt": "2026-10-26T12:22:23.946Z"
+  },
+  {
+    "id": "flow-ExpenseRequest-approval",
+    "name": "ExpenseRequest Approval Flow",
+    "description": "Auto-generated approval flow for ExpenseRequest. Customize email templates and add conditions as needed.",
+    "resourceName": "ExpenseRequest",
+    "enabled": true,
+    "variables": [
+      {
+        "name": "assigneeEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "creatorEmail",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "departmentEmails",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "formLink",
+        "type": "string",
+        "defaultValue": ""
+      }
+    ],
+    "nodes": [
+      {
+        "id": "ExpenseRequest-approval-trigger",
+        "type": "trigger",
+        "label": "On ExpenseRequest Submit",
+        "position": {
+          "x": 300,
+          "y": 50
+        },
+        "trigger": {
+          "type": "on-field-change",
+          "resourceName": "ExpenseRequest",
+          "fieldName": "status"
+        }
+      },
+      {
+        "id": "ExpenseRequest-approval-condition",
+        "type": "condition",
+        "label": "Status = PendingManagerApproval?",
+        "position": {
+          "x": 300,
+          "y": 160
+        },
+        "condition": {
+          "logic": "and",
+          "rules": [
+            {
+              "field": "triggerData.status",
+              "operator": "equals",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "ExpenseRequest-approval-approval",
+        "type": "approval",
+        "label": "ExpenseRequest Approval",
+        "position": {
+          "x": 300,
+          "y": 280
+        },
+        "approval": {
+          "steps": [
+            {
+              "name": "Yönetici Onayı",
+              "assigneeType": "role",
+              "assigneeValue": "DepartmentManager",
+              "actions": [
+                {
+                  "label": "Onayla",
+                  "type": "approve"
+                },
+                {
+                  "label": "Revize Et",
+                  "type": "revise",
+                  "requiredFields": [
+                    "revisionNote"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Finans Onayı",
+              "assigneeType": "role",
+              "assigneeValue": "FinanceApprover",
+              "actions": [
+                {
+                  "label": "Onayla",
+                  "type": "approve"
+                },
+                {
+                  "label": "Revize Et",
+                  "type": "revise",
+                  "requiredFields": [
+                    "revisionNote"
+                  ]
+                }
+              ]
+            }
+          ],
+          "trackRevisionHistory": true,
+          "onCompleteEvent": "ExpenseRequest-approval-completed"
+        }
+      },
+      {
+        "id": "ExpenseRequest-approval-email",
+        "type": "action",
+        "label": "Send Approval Email",
+        "position": {
+          "x": 300,
+          "y": 400
+        },
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{assigneeEmail}}",
+            "subject": "{{triggerData.title}} — Onayınızı bekliyor",
+            "body": "<p>Sayın onaylayıcı,</p><p><strong>{{triggerData.title}}</strong> harcama talebi onayınızı beklemektedir.</p>",
+            "contentType": "html"
+          }
+        }
+      },
+      {
+        "id": "ExpenseRequest-approval-completion-trigger",
+        "type": "trigger",
+        "label": "On ExpenseRequest Approved",
+        "position": {
+          "x": 700,
+          "y": 50
+        },
+        "trigger": {
+          "type": "manual",
+          "resourceName": "ExpenseRequest"
+        }
+      },
+      {
+        "id": "ExpenseRequest-approval-completion-email",
+        "type": "action",
+        "label": "Send Completion Email",
+        "position": {
+          "x": 700,
+          "y": 160
+        },
+        "action": {
+          "type": "send-email",
+          "config": {
+            "to": "{{creatorEmail}}",
+            "cc": "{{departmentEmails}}",
+            "subject": "{{triggerData.formNo}} — Tum onaylar tamamlandi",
+            "body": "<p>{{triggerData.formNo}} numarali formun onay sureci tamamlanmistir.</p>",
+            "contentType": "html"
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "gen_1793017343947_5",
+        "sourceNodeId": "ExpenseRequest-approval-trigger",
+        "targetNodeId": "ExpenseRequest-approval-condition"
+      },
+      {
+        "id": "gen_1793017343947_6",
+        "sourceNodeId": "ExpenseRequest-approval-condition",
+        "targetNodeId": "ExpenseRequest-approval-approval",
+        "branch": "true"
+      },
+      {
+        "id": "gen_1793017343947_7",
+        "sourceNodeId": "ExpenseRequest-approval-approval",
+        "targetNodeId": "ExpenseRequest-approval-email"
+      },
+      {
+        "id": "gen_1793017343947_8",
+        "sourceNodeId": "ExpenseRequest-approval-completion-trigger",
+        "targetNodeId": "ExpenseRequest-approval-completion-email"
+      }
+    ],
+    "createdAt": "2026-10-26T12:22:23.947Z",
+    "updatedAt": "2026-10-26T12:22:23.947Z"
+  }
+]
